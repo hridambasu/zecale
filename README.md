@@ -8,7 +8,7 @@ This project can be used to:
 
 :rotating_light: **WARNING** This project is a Work In Progress (WIP). It is highly inefficient and has not been thoroughly reviewed. Please do not use in production!
 
-## Building and running the project:
+## Building and running the `aggregator_server`:
 
 ### Environment
 
@@ -16,29 +16,27 @@ In order to follow the README below, you will need:
 - [Docker](https://www.docker.com/get-started)
 - [Python3](https://www.python.org/downloads/) (at least version `3.7`)
 
-### Development dependencies (for building outside of the Docker container)
+### Build and run on host machine
 
-Immediate dependencies are provided as submodules and compiled during the Zeth build.
-Ensure submodules are synced (`git submodule update --init --recursive`).
+#### Dependencies
 
-The following libraries are also required to build:
-
+Immediate dependencies are provided as submodules and compiled during the Zeth build. The following libraries are also required to build:
 - grpc
 - gmp
 - boost
 
-#### Build the project
+#### Build and run
 
-```bash
+```console
 # Clone this repository:
 git clone git@github.com:clearmatics/zecale.git
 cd zecale
 
-# Configure your environment
-. ./setup_env.sh
-
 # Initialize the submodules
 git submodule update --init --recursive
+
+# Configure your environment
+. ./setup_env.sh
 
 # Compile the aggregator
 mkdir build
@@ -58,20 +56,24 @@ make check
 aggregator_server
 ```
 
-##### Build and run the project in a docker container
+### Build and run in a docker container
 
-```bash
+```console
 # Pull the zeth-base image (this project has the same configuration as Zeth)
 docker pull clearmatics/zeth-base:latest
 
 # Build the Zecale dev image
 docker build -f Dockerfile-zecale -t zecale-dev:0.1 .
 
-# Start the container
+# Start the contpainer
 docker run -ti -p 50052:50052 --name zecale zecale-dev:0.1
 ```
 
-#### Notes
+## Build and run the client
+
+See the [client README](client/README.md) for instructions.
+
+## Notes
 
 - `nppT`: Type parameter representing the public parameters defining the nested curve (i.e. the curve over which "nested proofs" are generated. If a pairing-friendly amicable chain is used, `nppT` refers to the first curve of the chain)
 - `nsnarkT`: Type parameter representing the SNARK scheme used to generate the nested arguments
