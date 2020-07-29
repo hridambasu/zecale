@@ -12,7 +12,7 @@ API_OUTPUT:= \
   api/aggregator_pb2.py api/aggregator_pb2_grpc.py \
   api/snark_messages_pb2.py api/snark_messages_pb2_grpc.py
 
-MODULES_TO_CHECK:=zecale test
+MODULES_TO_CHECK:=zecale test commands
 
 # Create rule to build a grpc files from a source file. Params:
 #   1 - .proto file
