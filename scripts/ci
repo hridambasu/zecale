@@ -21,6 +21,19 @@ function format_check() {
     scripts/check_copyright
 }
 
+function client_check() {
+    # Execute setup from cient/README.md
+    pushd client
+    python3 -m venv env
+    . env/bin/activate
+    pip install --upgrade pip --progress-bar off
+    make setup
+    make check
+
+    deactivate
+    popd
+}
+
 function build() {
     # Enable warnings-as-errors
     # TODO: Uncomment, and support compilation with -Werror set

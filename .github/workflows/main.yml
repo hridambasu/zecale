@@ -9,7 +9,16 @@ env:
   CI_EVENT_NAME: ${{ github.event_name }}
 
 jobs:
-  build-macos-debug:
+  check-client:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Execute
+      run: CI_USE_DOCKER=1 scripts/ci client_check
+
+  build-macos:
     runs-on: macos-10.15
     strategy:
       matrix:
