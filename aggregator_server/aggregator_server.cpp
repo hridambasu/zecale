@@ -75,6 +75,9 @@ static const size_t batch_size = 1;
 class aggregator_server final : public zecale_proto::Aggregator::Service
 {
 private:
+    using application_pool =
+        libzecale::application_pool<npp, nsnark, batch_size>;
+
     libzecale::
         aggregator_circuit_wrapper<npp, wpp, nsnark, wverifier, batch_size>
             aggregator;
@@ -83,8 +86,7 @@ private:
     wsnark::keypair keypair;
 
     // The nested verification key is the vk used to verify the nested proofs
-    std::map<std::string, libzecale::application_pool<npp, nsnark, batch_size>>
-        pools_map;
+    std::map<std::string, application_pool> pools_map;
 
 public:
     explicit aggregator_server(
@@ -128,14 +130,22 @@ public:
         std::cout << "[ACK] Received 'register application' request"
                   << std::endl;
         std::cout << "[DEBUG] Registering application..." << std::endl;
+
         try {
+            // Ensure an app of the same name has not already been registered.
+            const std::string &name = registration->name();
+            if (pools_map.count(name)) {
+                return grpc::Status(
+                    grpc::StatusCode::INVALID_ARGUMENT,
+                    grpc::string("application already registered"));
+            }
+
             // Add the application to the list of supported applications on the
             // aggregator server.
-            typename nsnark::verification_key registered_vk =
-                napi_handler::verification_key_from_proto(registration->vk());
-            libzecale::application_pool<npp, nsnark, batch_size> app_pool(
-                registration->name(), registered_vk);
-            this->pools_map[registration->name()] = app_pool;
+            const zeth_proto::VerificationKey &vk_proto = registration->vk();
+            typename nsnark::verification_key vk =
+                napi_handler::verification_key_from_proto(vk_proto);
+            pools_map[name] = application_pool(name, vk);
         } catch (const std::exception &e) {
             std::cout << "[ERROR] " << e.what() << std::endl;
             return grpc::Status(
@@ -159,8 +169,7 @@ public:
         try {
             std::cout << "[DEBUG] Pop batch from the pool..." << std::endl;
             // Select the application pool corresponding to the request
-            libzecale::application_pool<npp, nsnark, batch_size> app_pool =
-                this->pools_map[app_name->name()];
+            application_pool app_pool = this->pools_map[app_name->name()];
             // Retrieve batch from the pool
             std::array<
                 libzecale::transaction_to_aggregate<npp, nsnark>,
@@ -216,7 +225,7 @@ public:
             libzecale::transaction_to_aggregate<npp, nsnark> tx = libzecale::
                 transaction_to_aggregate_from_proto<npp, napi_handler>(
                     *transaction);
-            libzecale::application_pool<npp, nsnark, batch_size> app_pool =
+            application_pool app_pool =
                 this->pools_map[transaction->application_name()];
             app_pool.add_tx(tx);
         } catch (const std::exception &e) {
