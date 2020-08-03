@@ -16,7 +16,7 @@ API_OUTPUT:= $(addprefix $(API_DEST_DIR)/, \
 MODULES_TO_CHECK:=zecale.core zecale.commands test
 
 
-# Create rule to build a grpc files from a source file. Params:
+# Create rule to build a grpc file from a source file. Params:
 #   1 - .proto file
 define grpc_build
   $(API_DEST_DIR)/$(notdir $(basename $1))_pb2.py \
