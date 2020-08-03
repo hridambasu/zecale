@@ -33,7 +33,7 @@ class AggregatorClient:
         reason.
         """
         registration = aggregator_pb2.ApplicationRegistration()
-        registration.name = app_name
+        registration.application_name = app_name
         registration.vk.CopyFrom(self.zksnark.verification_key_to_proto(vk)) \
             # pylint: disable=no-member
         with grpc.insecure_channel(self.endpoint) as channel:
