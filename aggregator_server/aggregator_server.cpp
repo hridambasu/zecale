@@ -95,7 +95,6 @@ public:
         aggregator_circuit_wrapper &aggregator, wsnark::keypair &keypair)
         : aggregator(aggregator), keypair(keypair)
     {
-        // Nothing
     }
 
     grpc::Status GetVerificationKey(
@@ -281,8 +280,7 @@ void display_server_start_message()
 }
 
 static void RunServer(
-    aggregator_server::aggregator_circuit_wrapper &aggregator,
-    typename wsnark::keypair &keypair)
+    aggregator_circuit_wrapper &aggregator, typename wsnark::keypair &keypair)
 {
     // Listen for incoming connections on 0.0.0.0:50052
     // TODO: Move this in a config file
