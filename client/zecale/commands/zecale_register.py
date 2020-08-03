@@ -19,7 +19,6 @@ from click import command, option, pass_context, Context
 def register(ctx: Context, key: str, name: str) -> None:
     client_ctx = ctx.obj
     vk = load_verification_key(key)
-    print(f"vk: {vk}")
 
     aggregator_client = client_ctx.get_aggregator_client()
     aggregator_client.register_application(vk, name)
